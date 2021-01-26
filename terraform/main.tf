@@ -93,3 +93,63 @@ provider "google" {
   project     = local.project
   region      = local.region1
 }
+
+######################################## bigquery ########################################
+# https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_table
+
+resource "google_bigquery_dataset" "import" {
+  dataset_id    = "import"
+  friendly_name = "import"
+  description   = "一時データ格納用データセット"
+  location      = local.region1
+
+  labels = {
+    import = "import"
+  }
+}
+
+resource "google_bigquery_table" "test_table" {
+  dataset_id = google_bigquery_dataset.import.dataset_id
+  table_id   = "test_table"
+
+  labels = {
+    env = "test_table"
+  }
+
+  # main.tfに直で記載する
+  schema = <<EOF
+[
+  {
+    "name": "name",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "名前"
+  },
+  {
+    "name": "description",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "説明"
+  }
+]
+EOF
+
+}
+
+resource "google_bigquery_table" "test_partitioning_table" {
+  dataset_id = google_bigquery_dataset.import.dataset_id
+  table_id   = "test_partitioning_table"
+
+  # time_partitioningで使用するカラムを指定する
+  time_partitioning {
+    type = "DAY"
+    field = "day"
+  }
+
+  labels = {
+    env = "test_partitioning_table"
+  }
+
+  # schemaディレクトリに格納したスキーマ定義ファイルを読み込む
+  schema = file("./schema/test_partitioning_table.json")
+}
