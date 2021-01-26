@@ -1,0 +1,20 @@
+[
+    {
+      "name": "name",
+      "type": "STRING",
+      "mode": "NULLABLE",
+      "description": "名称"
+    },
+    {
+      "name": "description",
+      "type": "STRING",
+      "mode": "NULLABLE",
+      "description": "説明"
+    },
+    {
+      "name": "day",
+      "type": "DATE",
+      "mode": "NULLABLE",
+      "description": "日付パーティションで使用するカラム"
+    }
+]
