@@ -43,20 +43,26 @@ $ gsutil mb -l asia-northeast1 -p sandbox-terunrun-dev gs://sandbox-terunrun-dev
 ```
 
 #### サービスアカウントおよびキー作成
-1. GCP環境にstate管理用サービスアカウントおよびそのサービスアカウントキーを作成する。([サービスアカウントのキー作成](https://cloud.google.com/iam/docs/creating-managing-service-account-keys?hl=ja#creating_service_account_keys))
-
-2. 1で作成したサービスアカウントにtfstateファイル格納バケットのストレージ管理者権限を付与する。
-
-3. GCP環境にTerraform用サービスアカウントおよびそのサービスアカウントキーを作成する。
-
+1. GCP環境にstate管理用サービスアカウントを作成する。([サービスアカウント作成](https://cloud.google.com/iam/docs/creating-managing-service-accounts?hl=ja))
+```sh
+$ gcloud iam service-accounts create SERVICE_ACCOUNT_ID \
+--description="DESCRIPTION" \
+--display-name="DISPLAY_NAME"
+```
+2. 1.で作成したサービスアカウントのキーを作成する。([サービスアカウントキー作成](https://cloud.google.com/iam/docs/creating-managing-service-account-keys?hl=ja))
+```sh
+$ gcloud iam service-accounts keys create ~/backend_credential.json \
+--iam-account sa-name@project-id.iam.gserviceaccount.com
+```
+3. 1.で作成したサービスアカウントにtfstateファイル格納バケットのストレージ管理者権限を付与する。
+4. GCP環境にTerraform用サービスアカウントおよびそのサービスアカウントキーを作成する。
 > 開発段階ではサービスアカウントの役割を「editor」に設定しておくのがよい（と思われる）。
-
-4. 作成したキーをGoogleドライブなど、プロジェクト関係者が共通して参照できる場所に格納する。
+5. 作成したキーをGoogleドライブなど、プロジェクト関係者が共通して参照できる場所に格納する。
 
 ## Terrafrom実行
 ### Terraform初期化
 #### サービスアカウントキー配置
-Googleドライブからサービスアカウントキーをダウンロードし、main.tfに記載されているキー格納場所に配置する。
+Googleドライブなどからサービスアカウントキーをダウンロードし、main.tfに記載されているキー格納場所に配置する。
 
 #### Terraform初期化（terraformコマンド初回実行時のみ）
 ```bash
