@@ -17,10 +17,8 @@ resource "google_storage_bucket" "terraform-state" {
   location           = local.region1
   storage_class      = "REGIONAL"
   bucket_policy_only = true
-  labels = {
-    # TODO:設定するとエラーになるので一旦コメントアウト
-    # description = "TerraformのStateファイル格納バケット"
-  }
+  # labels = {
+  # }
   versioning {
     enabled = true
   }
@@ -94,7 +92,29 @@ provider "google" {
   region      = local.region1
 }
 
+######################################## storage ########################################
+# https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket
+
+resource "google_storage_bucket" "csv-bucket" {
+  name          = "${local.project}-csv-bucket"
+  location      = local.region1
+  storage_class = "REGIONAL"
+  labels = {
+    env         = terraform.workspace
+  }
+}
+
+resource "google_storage_bucket" "csv-bucket-buckup" {
+  name          = "${local.project}-csv-bucket-buckup"
+  location      = local.region1
+  storage_class = "REGIONAL"
+  labels = {
+    env         = terraform.workspace
+  }
+}
+
 ######################################## bigquery ########################################
+# https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_dataset
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_table
 
 resource "google_bigquery_dataset" "import" {
