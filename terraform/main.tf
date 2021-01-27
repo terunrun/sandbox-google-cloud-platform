@@ -7,7 +7,7 @@ terraform {
     credentials = "backend_credential.json" # terraform-backendのサービスアカウントキー
   }
   required_providers {
-    google = "~> 3.21.0"
+    google = "~> 3.54.0"
   }
 }
 
