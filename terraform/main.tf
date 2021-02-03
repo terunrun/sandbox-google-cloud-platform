@@ -16,7 +16,7 @@ resource "google_storage_bucket" "terraform-state" {
   name               = "${local.project}-terraform-state"
   location           = local.region1
   storage_class      = "REGIONAL"
-  bucket_policy_only = true
+  uniform_bucket_level_access = true
   # labels = {
   # }
   versioning {
