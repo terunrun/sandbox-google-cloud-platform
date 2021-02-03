@@ -113,6 +113,54 @@ resource "google_storage_bucket" "csv-bucket-buckup" {
   }
 }
 
+# Cloud Composer環境を作成によって自動で作成されるため、あとでstateにimportする
+# resource "google_storage_bucket" "composer-bucket" {
+#   name          = local.composer-bucket-name
+#   location      = local.region1
+#   storage_class = "STANDARD"
+#   labels = {
+#     "goog-composer-environment" = local.project
+#     "goog-composer-location"    = local.region1
+#     "goog-composer-version"     = local.composer_version
+#   }
+# }
+
+######################################## Cloud Composer ########################################
+# https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/composer_environment
+
+# INFO:デフォルト設定を一旦使用するものも、あとで変更する場合に備えて残してある
+resource "google_composer_environment" "composer-environment" {
+  name   = local.project
+  region = local.region1
+  # labels = null
+  config {
+    # node_count = 3
+
+    node_config {
+      zone         = local.zone1
+    #   machine_type = local.machine-type-composer
+    #   disk_size_gb = local.disk-size-composer
+    #   oauth_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+    #   tags         = null
+    }
+
+    software_config {
+      airflow_config_overrides = {
+        core-dagbag_import_timeout       = 60
+        core-default_timezone            = "Asia/Tokyo"
+        core-dags_are_paused_at_creation = "True"
+        core-logging_level               = terraform.workspace == "dev" ? "DEBUG" : "INFO"
+      }
+    #   env_variables  = null
+    #   pypi_packages = {
+    #     google-cloud-datastore = "==1.8.0"
+    #   }
+      image_version  = "composer-1.13.3-airflow-1.10.12"
+      python_version = 3
+    }
+  }
+}
+
 ######################################## bigquery ########################################
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_dataset
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_table
