@@ -41,6 +41,9 @@ locals {
   region2 = "asia-east1"
   zone1   = "asia-northeast1-b" #メインで利用するゾーン
 
+  # instance
+  machine-type   = local.env["machine-type"]
+
   # composer
   composer-bucket-name  = local.env["composer-bucket-name"]
   composer_version      = local.env["composer_version"]
@@ -56,6 +59,9 @@ locals {
     dev = {
       # common
       project = "sandbox-terunrun-dev"
+
+      # instance
+      machine-type   = "n1-standard-1"
 
       # composer
       composer-bucket-name = ""
@@ -90,6 +96,46 @@ provider "google" {
   credentials = file("./${terraform.workspace}/terraform_deployment_service_account_credential.json")
   project     = local.project
   region      = local.region1
+}
+
+
+######################################## network ########################################
+# https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_address
+
+resource "google_compute_address" "test-static-ip" {
+  name   = "test-static-ip"
+  region = local.region1
+}
+
+######################################## instance ########################################
+# https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance
+
+resource "google_compute_instance" "test-instance" {
+  name         = "test-${terraform.workspace}"
+  machine_type = local.machine-type
+  zone         = local.zone1
+  description  = "テスト用サーバ"
+  # tags         = ["no-ip"]
+
+  labels = {
+    env           = terraform.workspace
+    friendly_name = "テスト用サ-バ"
+  }
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-9"
+    }
+  }
+
+  network_interface {
+    network = "default"
+    access_config {
+      nat_ip = google_compute_address.test-static-ip.address
+    }
+  }
+
+  # metadata_startup_script = "${data.template_file.hul-startup-script.rendered}"
 }
 
 ######################################## storage ########################################
@@ -129,37 +175,37 @@ resource "google_storage_bucket" "csv-bucket-buckup" {
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/composer_environment
 
 # INFO:デフォルト設定を一旦使用するものも、あとで変更する場合に備えて残してある
-resource "google_composer_environment" "composer-environment" {
-  name   = local.project
-  region = local.region1
-  # labels = null
-  config {
-    # node_count = 3
+# resource "google_composer_environment" "composer-environment" {
+#   name   = local.project
+#   region = local.region1
+#   # labels = null
+#   config {
+#     # node_count = 3
 
-    node_config {
-      zone         = local.zone1
-    #   machine_type = local.machine-type-composer
-    #   disk_size_gb = local.disk-size-composer
-    #   oauth_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-    #   tags         = null
-    }
+#     node_config {
+#       zone         = local.zone1
+#     #   machine_type = local.machine-type-composer
+#     #   disk_size_gb = local.disk-size-composer
+#     #   oauth_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+#     #   tags         = null
+#     }
 
-    software_config {
-      airflow_config_overrides = {
-        core-dagbag_import_timeout       = 60
-        core-default_timezone            = "Asia/Tokyo"
-        core-dags_are_paused_at_creation = "True"
-        core-logging_level               = terraform.workspace == "dev" ? "DEBUG" : "INFO"
-      }
-    #   env_variables  = null
-    #   pypi_packages = {
-    #     google-cloud-datastore = "==1.8.0"
-    #   }
-      image_version  = "composer-1.13.3-airflow-1.10.12"
-      python_version = 3
-    }
-  }
-}
+#     software_config {
+#       airflow_config_overrides = {
+#         core-dagbag_import_timeout       = 60
+#         core-default_timezone            = "Asia/Tokyo"
+#         core-dags_are_paused_at_creation = "True"
+#         core-logging_level               = terraform.workspace == "dev" ? "DEBUG" : "INFO"
+#       }
+#     #   env_variables  = null
+#     #   pypi_packages = {
+#     #     google-cloud-datastore = "==1.8.0"
+#     #   }
+#       image_version  = "composer-1.13.3-airflow-1.10.12"
+#       python_version = 3
+#     }
+#   }
+# }
 
 ######################################## bigquery ########################################
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_dataset
