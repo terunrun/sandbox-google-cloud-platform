@@ -135,7 +135,7 @@ resource "google_compute_instance" "test-instance" {
     }
   }
 
-  # metadata_startup_script = "${data.template_file.hul-startup-script.rendered}"
+  # metadata_startup_script = ""
 }
 
 ######################################## storage ########################################
