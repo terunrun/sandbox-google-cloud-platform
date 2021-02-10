@@ -26,7 +26,7 @@ $ curl "https://{REGION}-{PROJECT_ID}.cloudfunctions.net/{FUNCTION_NAME}"
 ## 削除
 以下コマンドを実行する。
 ```sh
-$ gcloud functions delete {FUNCTION_NAME}
+$ gcloud functions delete {FUNCTION_NAME} --region {REGION} --project {PROJECT_ID} 
 ```
 Cloud Storageにバケットが作成されているため削除する。
 * gcf-sources-{RUNDOM_NUMBER}-{REGION}
