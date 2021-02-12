@@ -114,6 +114,16 @@ resource "google_compute_address" "test-static-ip" {
 ######################################## instance ########################################
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance
 
+data "template_file" "test-startup-script" {
+  template = <<EOF
+#!/bin/bash
+sudo yum -y install python3
+# パッケージインストール時にエラーになることがあるためその解決策として
+sudo pip3 install --upgrade pip setuptools
+sudo pip3 install paramiko
+EOF
+}
+
 resource "google_compute_instance" "test-instance" {
   name         = "test-${terraform.workspace}"
   machine_type = local.machine-type
@@ -128,18 +138,21 @@ resource "google_compute_instance" "test-instance" {
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-9"
+      # gcloud compute images listで表示されるPROJECT/FAMILYで指定する。
+      # image = "debian-cloud/debian-9"
+      image = "centos-cloud/centos-7"
     }
   }
 
   network_interface {
     network = "default"
     access_config {
+      # 固定IPを付与する。
       nat_ip = google_compute_address.test-static-ip.address
     }
   }
 
-  # metadata_startup_script = ""
+  metadata_startup_script = data.template_file.test-startup-script.rendered
 }
 
 ######################################## storage ########################################
