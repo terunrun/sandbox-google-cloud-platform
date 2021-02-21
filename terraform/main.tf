@@ -103,6 +103,15 @@ provider "google" {
 }
 
 
+######################################## Service Accounts ###############################
+# https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account
+
+resource "google_service_account" "gce_service_account" {
+  account_id   = "compute-engine"
+  display_name = "compute-engine"
+  description  = "デフォルトのComputeEngineサービスアカウントを使用したくない場合に使用する"
+}
+
 ######################################## network ########################################
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_address
 
@@ -120,7 +129,9 @@ data "template_file" "test-startup-script" {
 sudo yum -y install python3
 # パッケージインストール時にエラーになることがあるためその解決策として
 sudo pip3 install --upgrade pip setuptools
+# 必要なパッケージをインストールする
 sudo pip3 install paramiko
+sudo pip3 install google-cloud-storage
 EOF
 }
 
@@ -147,9 +158,17 @@ resource "google_compute_instance" "test-instance" {
   network_interface {
     network = "default"
     access_config {
-      # 固定IPを付与する。
-      nat_ip = google_compute_address.test-static-ip.address
+      # 固定外部IPを付与する。
+      # nat_ip = google_compute_address.test-static-ip.address
     }
+  }
+
+  service_account {
+    # 使用するサービスアカウントを設定する。（defaultでデフォルトのcompute engineサービスアカウント）
+    # email  = google_service_account.default.email
+    email  = google_service_account.gce_service_account.email
+    # すべての Cloud API に完全アクセス権を許可する、
+    scopes = ["cloud-platform"]
   }
 
   metadata_startup_script = data.template_file.test-startup-script.rendered

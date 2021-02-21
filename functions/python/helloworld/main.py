@@ -8,5 +8,5 @@ def hello_world(request):
         Response object using `make_response`
         <https://flask.palletsprojects.com/en/1.1.x/api/#flask.make_response>.
     """
-    # words = 'Hello World!'
+    words = 'Hello World!'
     return words
