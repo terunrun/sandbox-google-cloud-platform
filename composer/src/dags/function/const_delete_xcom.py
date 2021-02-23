@@ -1,0 +1,1 @@
+QUERY = 'delete from xcom'
