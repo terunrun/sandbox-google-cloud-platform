@@ -4,6 +4,7 @@
 * python：pythonで記述したコード群
 
 ## ビルド
+[Cloud Build](https://cloud.google.com/build?hl=ja)を使う。  
 ソースコードおよびDockerfileが存在するディレクトリにて以下コマンドを実行する。  
 > {FUNCTION NAME} はmain.py内の関数名を指定する。
 ```sh
