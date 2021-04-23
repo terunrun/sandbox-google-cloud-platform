@@ -1,4 +1,4 @@
-"""PythonOperatorを使用するサンプルDAG"""
+"""PythonOperatorでmacrosを調べるDAG"""
 
 from datetime import datetime, timezone
 from airflow import DAG
@@ -8,7 +8,7 @@ import pendulum
 from function import utils
 
 # DAG設定
-DAG_NAME = 'dag_python'
+DAG_NAME = 'dag_macros'
 default_args = {
     'owner': 'terunrun',
     'depends_on_past': False,
@@ -19,7 +19,14 @@ default_args = {
 }
 dag = DAG(DAG_NAME, schedule_interval=None, default_args=default_args, catchup=False)
 
-# macrosとして使用できるものの値を表示する関数を実行する
+# get_today_op_args = PythonOperator(
+#     task_id='get_today_op_args',
+#     python_callable=util.get_today_op_args,
+#     op_args=['{{ execution_date }}',],
+#     # provide_context=-True,
+#     dag=dag,
+# )
+
 get_today_op_kwargs = PythonOperator(
     task_id='get_today_op_kwargs',
     python_callable=utils.get_templates_dict,

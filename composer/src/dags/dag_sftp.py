@@ -3,7 +3,9 @@
 from datetime import datetime
 from airflow import DAG
 from airflow.contrib.operators.sftp_operator import SFTPOperator
+from airflow.operators.python_operator import PythonOperator
 import pendulum
+from function import utils
 
 # DAG設定
 DAG_NAME = 'dag_sftp'
@@ -27,5 +29,12 @@ sftp = SFTPOperator(
     operation='GET',
     # confirm=,
     create_intermediate_dirs=True,
+    dag=dag,
+)
+
+python_sftp = PythonOperator(
+    task_id = 'python_sftp',
+    python_callable=utils.sftp,
+    provide_context=True,
     dag=dag,
 )

@@ -52,3 +52,11 @@ run_bq_query = BigQueryOperator(
     # encryption_configuration=None,
     dag=dag,
 )
+
+# エラー関数を実行する
+error_query = BigQueryOperator(
+    task_id='error_query',
+    sql='select error("errorです")',
+    use_legacy_sql=False,
+    dag=dag,
+)
