@@ -1,0 +1,23 @@
+# https://cloud.google.com/workflows/docs/reference/syntax/steps#embedded-steps
+main:
+  steps:
+    - series_one:
+        steps:
+          - first_step_1:
+              call: sys.sleep
+              args:
+                  seconds: 60 # MAX 31,536,000 sec (1 year)
+          - first_step_1:
+              return: "First Step 1 SUCCESS"
+          - first_step_2:
+              call: sys.sleep
+              args:
+                  seconds: 120 # MAX 31,536,000 sec (1 year)
+          - first_step_2:
+              return: "First Step 2 SUCCESS"
+    - second_step:
+        call: sys.sleep
+        args:
+            seconds: 300 # MAX 31,536,000 sec (1 year)
+    - the_end:
+        return: "All Step SUCCESS"

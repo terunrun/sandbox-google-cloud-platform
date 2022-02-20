@@ -1,0 +1,14 @@
+main:
+  steps:
+    - preprocess:
+        call: http.post
+        args:
+          url: https://{LOCATION}-{PROJECT_ID}.cloudfunctions.net/sample_429
+          auth:
+            type: OIDC
+        result: result_preprocess
+    - logging_preprocess:
+        call: sys.log
+        args:
+          text: ${result_preprocess.body}
+          severity: INFO

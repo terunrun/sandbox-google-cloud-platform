@@ -1,0 +1,33 @@
+main:
+  steps:
+    - init:
+        assign:
+          - project: ${sys.get_env("GOOGLE_CLOUD_PROJECT_ID")}
+    - put_to_gcs:
+        call: http.get
+        args:
+          url: {PUT_TO_GCS_CLOUDRUN_URL}
+          timeout: 1800
+          auth:
+            type: OIDC
+        result: put_to_gcs_result
+    - logging_put_to_gcs:
+        call: sys.log
+        args:
+          text: ${put_to_gcs_result.body}
+          severity: INFO
+    - get_from_gcs:
+        call: http.post
+        args:
+          url: {GET_FROM_GCS_CLOUDRUN_URL}
+          body:
+            filename: ${put_to_gcs_result.body.filename}
+          timeout: 1800
+          auth:
+            type: OIDC
+        result: get_from_gcs_result
+    - logging_get_from_gcs:
+        call: sys.log
+        args:
+          text: ${get_from_gcs_result.body}
+          severity: INFO

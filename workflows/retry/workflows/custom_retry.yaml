@@ -1,0 +1,22 @@
+main:
+  steps:
+    - preprocess:
+        try:
+          call: http.post
+          args:
+            url: https://{LOCATION}-{PROJECT_ID}.cloudfunctions.net/sample_429
+            auth:
+              type: OIDC
+          result: result_preprocess
+        retry: 
+          predicate: ${http.default_retry_predicate}
+          max_retries: 10
+          backoff:
+              initial_delay: 1
+              max_delay: 90
+              multiplier: 3
+    - logging_preprocess:
+        call: sys.log
+        args:
+          text: ${result_preprocess.body}
+          severity: INFO
