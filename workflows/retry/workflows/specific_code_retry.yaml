@@ -1,0 +1,56 @@
+# https://cloud.google.com/workflows/docs/reference/syntax/retrying#retry_steps_using_a_custom_retry_policy
+main:
+  steps:
+    - return_429:
+        try:
+          call: http.post
+          args:
+            url: https://{LOCATION}-{PROJECT_ID}.cloudfunctions.net/return_status_code
+            body:
+              status_code: 429
+            auth:
+              type: OIDC
+          result: result_return_429
+        retry: 
+          predicate: ${custom_predicate}
+          max_retries: 10
+          backoff:
+              initial_delay: 1
+              max_delay: 90
+              multiplier: 3
+    - logging_return_429:
+        call: sys.log
+        args:
+          text: ${result_return_429.body}
+          severity: INFO
+    - return_500:
+        try:
+          call: http.post
+          args:
+            url: https://{LOCATION}-{PROJECT_ID}.cloudfunctions.net/return_status_code
+            body:
+              status_code: 500
+            auth:
+              type: OIDC
+          result: result_return_500
+        retry: 
+          predicate: ${custom_predicate}
+          max_retries: 10
+          backoff:
+              initial_delay: 1
+              max_delay: 90
+              multiplier: 3
+    - logging_return_500:
+        call: sys.log
+        args:
+          text: ${result_return_500.body}
+          severity: INFO
+custom_predicate:
+    params: [e]
+    steps:
+      - what_to_repeat:
+          switch:
+          - condition: ${e.code == 429}
+            return: True
+      - otherwise:
+          return: False

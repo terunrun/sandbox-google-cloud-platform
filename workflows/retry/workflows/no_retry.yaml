@@ -1,14 +1,16 @@
 main:
   steps:
-    - preprocess:
+    - return_429:
         call: http.post
         args:
-          url: https://{LOCATION}-{PROJECT_ID}.cloudfunctions.net/sample_429
+          url: https://{LOCATION}-{PROJECT_ID}.cloudfunctions.net/return_status_code
+          body:
+            status_code: 429
           auth:
             type: OIDC
-        result: result_preprocess
-    - logging_preprocess:
+        result: result_return_429
+    - logging_return_429:
         call: sys.log
         args:
-          text: ${result_preprocess.body}
+          text: ${result_return_429.body}
           severity: INFO

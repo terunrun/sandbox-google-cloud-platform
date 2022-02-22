@@ -1,13 +1,15 @@
 main:
   steps:
-    - preprocess:
+    - return_429:
         try:
           call: http.post
           args:
-            url: https://{LOCATION}-{PROJECT_ID}.cloudfunctions.net/sample_429
+            url: https://{LOCATION}-{PROJECT_ID}.cloudfunctions.net/return_status_code
+            body:
+              status_code: 429
             auth:
               type: OIDC
-          result: result_preprocess
+          result: result_return_429
         retry: 
           predicate: ${http.default_retry_predicate}
           max_retries: 10
@@ -15,8 +17,8 @@ main:
               initial_delay: 1
               max_delay: 90
               multiplier: 3
-    - logging_preprocess:
+    - logging_return_429:
         call: sys.log
         args:
-          text: ${result_preprocess.body}
+          text: ${result_return_429.body}
           severity: INFO
