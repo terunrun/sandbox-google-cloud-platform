@@ -7,13 +7,13 @@ main:
               call: sys.sleep
               args:
                   seconds: 60 # MAX 31,536,000 sec (1 year)
-          - first_step_1:
+          - first_step_1_result:
               return: "First Step 1 SUCCESS"
           - first_step_2:
               call: sys.sleep
               args:
                   seconds: 120 # MAX 31,536,000 sec (1 year)
-          - first_step_2:
+          - first_step_2_result:
               return: "First Step 2 SUCCESS"
     - second_step:
         call: sys.sleep

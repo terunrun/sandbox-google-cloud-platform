@@ -1,0 +1,46 @@
+# https://cloud.google.com/workflows/docs/reference/syntax/iteration#basic-for-range
+main:
+  steps:
+    - init:
+        assign:
+          - project: ${sys.get_env("GOOGLE_CLOUD_PROJECT_ID")}
+    - run_sleep:
+        call: http.post
+        args:
+          url: [CLOUR_RUN_URL]
+          body:
+            coefficient: 1
+          timeout: 180
+          auth:
+            type: OIDC
+        result: run_sleep_result
+    - logging_run_sleep:
+        call: sys.log
+        args:
+          text: ${run_sleep_result.body}
+          severity: INFO
+    # - assignStep:
+    #     assign:
+    #         - filelist: ${run_sleep_result.body.filelist}
+    - iterate:
+        for:
+            # value: v
+            # in: ${filelist}
+            value: v
+            range: [1, 5]
+            steps:
+                - run_sleep_iter:
+                    call: http.post
+                    args:
+                        url: [CLOUR_RUN_URL]
+                        body:
+                          coefficient: ${v}
+                        timeout: 220
+                        auth:
+                          type: OIDC
+                    result: run_sleep_iter_result
+                - logging_run_sleep_iter:
+                    call: sys.log
+                    args:
+                      text: ${run_sleep_iter_result.body}
+                      severity: INFO
