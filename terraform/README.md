@@ -1,15 +1,4 @@
-# [Terraform](https://www.terraform.io/)を利用したインフラ定義
-
-## 概要
-
-Terraformを利用して各環境のGCPリソースを管理する。  
-workspace機能を使うと、同一種であるが各環境ごとに定義が異なるリソースを管理することができる。workspaceは例えば以下のように分ける。
-* dev（開発環境想定）
-* stg（検証環境想定）
-* prd（本番環境想定）
-
-上記各環境の状態を反映したtfstateファイルは開発環境のGCSで管理するとよい。  
-
+# [Terraform](https://www.terraform.io/)
 
 ## Terraform導入（ローカル環境）
 #### terrafromバージョン管理ツールをインストールする。
@@ -34,9 +23,9 @@ $ terraform version
 ```
 
 ## Terrafrom実行準備 （各環境で初回のみ実施）
-
 #### tfstateファイル格納バケット作成（開発環境でのみ実施）
-> tfstateファイルはTerraformで構築したリソースの状態を記載するものである。デフォルトではローカル保存される設定であるが、プロジェクトメンバー間での共有を可能とするためCloud Storageなどで管理するのがよい。
+> tfstateファイルはTerraformで構築したリソースの状態を記載するものである。
+> デフォルトではローカル保存される設定であるが、プロジェクトメンバー間での共有を可能とするためCloud Storageなどで管理するのがよい。
 
 ```bash
 $ gsutil mb -l asia-northeast1 -p sandbox-terunrun-dev gs://sandbox-terunrun-dev-terraform-state
@@ -56,7 +45,6 @@ $ gcloud iam service-accounts keys create ~/backend_credential.json \
 ```
 3. 1.で作成したサービスアカウントにtfstateファイル格納バケットのストレージ管理者権限を付与する。
 4. GCP環境にTerraform用サービスアカウントおよびそのサービスアカウントキーを作成する。
-> 開発段階ではサービスアカウントの役割を「editor」に設定しておくのがよい（と思われる）。
 5. 作成したキーをGoogleドライブなど、プロジェクト関係者が共通して参照できる場所に格納する。
 
 ## Terrafrom実行
@@ -70,13 +58,13 @@ $ terraform init
 ```
 
 ### Terrafrom実行
-
 #### フォーマット整形（必要な場合）
 ```bash
 $ terraform fmt -recursive
 ```
 
 #### 差分確認（tfファイルと実環境（tfstateファイル）の差分を出力）
+> terraform apply時に同じ結果が返ってくるため必須ではない
 ```bash
 $ terraform plan
 ```
@@ -89,41 +77,12 @@ $ terraform apply
 
 #### その他のコマンド
 ```bash
-# 部分的にapplyしたい場合はtargetを付ける（非推奨）
-$ terraform apply -target=<tfファイルのリソース名>
-# 例） $ terraform apply -target=google_storage_bucket.gcp_infra_state
-```
-
-```bash
-# 管理対象リソースの一部を削除する例。
-# BigQueryのデータセットなど削除できないものもある。
-$ terraform destroy -target 'google_compute_instance.dataflow-deploy-env'
-```
-
-```bash
 # 管理対象リソース全てを削除する。
 $ terraform destroy
 ```
 
-## workspace関連
 ```bash
-# workspaceを作成する
-$ terraform workspace new stg
-```
-
-```bash
-# workspaceを切り替える
-$ terraform workspace select dev
-```
-
-```bash
-# workspaceを確認する
-$ terraform workspace list
-```
-
-## その他のコマンド
-```bash
-# 何らかの理由で先にGCPへ物を作ってしまった場合、importでtfstateへ反映可能。
+# importコマンドでTerraformを使わず作成したリソースをtfstateファイルへ反映可能。
 $ terraform workspace select <workspace>
 $ terraform import <tfファイルのリソース名> <GCPのリソース名>
 
