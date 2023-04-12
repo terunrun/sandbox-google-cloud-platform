@@ -24,7 +24,7 @@ bq_to_gcs = BigQueryToCloudStorageOperator(
     # export対象データセット.テーブル
     source_project_dataset_table=consts.WARM_DATASET + '.' + consts.DATA_NAME + '_' + '{{ (execution_date + macros.timedelta(hours=+9)).strftime("%Y%m%d") }}',
     # export先オブジェクト名（uriなのでgs://形式で記述する）
-    destination_cloud_storage_uris='gs://' + consts.TABLE_EXPORT_BUCKET + '/' + consts.FOLDER_NAME + '/' + consts.DATA_NAME + '_' + '{{ (execution_date + macros.timedelta(hours=+9)).strftime("%Y%m%d") }}'
+    destination_cloud_storage_uris='gs://' + consts.TABLE_EXPORT_BUCKET + '/' + consts.FOLDER_NAME + '/' + consts.DATA_NAME + '_' + '{{ (execution_date + macros.timedelta(hours=+9)).strftime("%Y%m%d") }}',
     # 圧縮形式
     compression='GZIP',
     # export形式

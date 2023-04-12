@@ -41,7 +41,7 @@ set_reference_date = BranchPythonOperator(
     task_id='set_reference_date',
     python_callable=utils.set_reference_date,
     templates_dict={
-        'data_name': const.DATA_NAME,
+        'data_name': consts.DATA_NAME,
         'execute_task_id_1': 'sensor_csv',
         'execute_task_id_2': 'dummy',
     },

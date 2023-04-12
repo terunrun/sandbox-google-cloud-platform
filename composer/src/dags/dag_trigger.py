@@ -28,6 +28,6 @@ trigger_dag = TriggerDagRunOperator(
     # トリガーするDAGを指定
     trigger_dag_id='dag_triggered_dag',
     # トリガーするexecution_dateを指定
-    execution_date='{{ (execution_date + macros.timedelta(hours=+9)).strftime("%Y%m%d") }}'
+    execution_date='{{ (execution_date + macros.timedelta(hours=+9)).strftime("%Y%m%d") }}',
     dag=dag,
 )

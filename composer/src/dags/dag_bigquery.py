@@ -42,7 +42,7 @@ run_bq_query = BigQueryOperator(
     create_disposition='CREATE_IF_NEEDED',
     # schema_update_options=(),
     # クエリパラメータを複数指定することができる（macrosは使用できない）
-    query_params=[{ 'name': 'target_date', 'parameterType': { 'type': 'STRING' }, 'parameterValue': { 'value': '{{ (execution_date + macros.timedelta(hours=+9)).strftime("%Y%m%d") }}' },],
+    query_params=[{ 'name': 'target_date', 'parameterType': { 'type': 'STRING' }, 'parameterValue': { 'value': '{{ (execution_date + macros.timedelta(hours=+9)).strftime("%Y%m%d") }}' }},],
     # labels=None,
     # priority='INTERACTIVE',
     # time_partitioning=None,
