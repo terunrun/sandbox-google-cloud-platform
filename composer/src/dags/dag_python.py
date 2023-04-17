@@ -1,6 +1,6 @@
 """PythonOperatorでmacrosを調べるDAG"""
 
-from datetime import datetime, timezone
+from datetime import datetime
 from airflow import DAG
 from airflow.models import Variable
 from airflow.operators.python_operator import PythonOperator
@@ -19,16 +19,8 @@ default_args = {
 }
 dag = DAG(DAG_NAME, schedule_interval=None, default_args=default_args, catchup=False)
 
-# get_today_op_args = PythonOperator(
-#     task_id='get_today_op_args',
-#     python_callable=util.get_today_op_args,
-#     op_args=['{{ execution_date }}',],
-#     # provide_context=-True,
-#     dag=dag,
-# )
-
-get_today_op_kwargs = PythonOperator(
-    task_id='get_today_op_kwargs',
+get_templates_dict = PythonOperator(
+    task_id='get_templates_dict',
     python_callable=utils.get_templates_dict,
     op_kwargs={
         'ds': '{{ ds }}',

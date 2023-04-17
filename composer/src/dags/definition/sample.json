@@ -1,0 +1,9 @@
+[
+    {
+      "folder_name": "sample_folder",
+      "file_name": "sample_file",
+      "shell": "sample.sh",
+      "schema": "sample_warm_table.json",
+      "sql": "sample.sql"
+    }
+]

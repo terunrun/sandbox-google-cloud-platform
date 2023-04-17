@@ -38,7 +38,7 @@ run_bq_query = PythonOperator(
         # FIXME:パーティションを使用する場合はコメントアウトを外す
         # 'time_partitioning': 'performance_management_year_monthly',
         'time_partitioning': '',
-        # 'cluster_fields': ['reference_date'],
+        # 'cluster_fields': ['execution_date'],
         'cluster_fields': [],
         'location': const.BASE_LOCATION,
     },
@@ -164,7 +164,7 @@ create_raw_invalid_time_partitioning = PythonOperator(
         'destination_table': const.RAW_PREFIX + 'destination_table',
         'write_disposition': 'WRITE_TRUNCATE',
         'create_disposition': 'CREATE_IF_NEEDED',
-        'query_param_values': {'reference_date': '201903'},
+        'query_param_values': {'execution_date': '201903'},
         'time_partitioning': 12345,
         'cluster_fields': [],
         'location': 'US',

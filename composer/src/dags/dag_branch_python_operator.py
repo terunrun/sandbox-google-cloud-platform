@@ -20,11 +20,10 @@ default_args = {
 dag = DAG(DAG_NAME, schedule_interval=None, default_args=default_args)
 
 # TASK設定
-set_reference_date_sample = BranchPythonOperator(
-    task_id='set_reference_date_set_reference_date_sample',
-    python_callable=utils.set_reference_date,
+set_execution_date_sample = BranchPythonOperator(
+    task_id='set_execution_date_set_execution_date_sample',
+    python_callable=utils.set_execution_date,
     templates_dict={
-        'data_name': consts.DATA_NAME_SAMPLE,
         'execute_task_id': ['execute_monthly', 'execute_monthly_2'],
     },
     provide_context=True,
@@ -32,21 +31,19 @@ set_reference_date_sample = BranchPythonOperator(
 )
 
 # 呼び出し関数テスト用TASK
-set_reference_date_invalid_data_name = BranchPythonOperator(
-    task_id='set_reference_date_invalid_data_name',
-    python_callable=util.set_reference_date,
+set_execution_date_invalid_data_name = BranchPythonOperator(
+    task_id='set_execution_date_invalid_data_name',
+    python_callable=utils.set_execution_date,
     templates_dict={
-        'data_name': 12345,
         'execute_task_id': ['execute_monthly', 'execute_monthly_2'],
     },
     provide_context=True,
     dag=dag,
 )
-set_reference_date_invalid_execute_task_id = BranchPythonOperator(
-    task_id='set_reference_date_invalid_execute_task_id',
-    python_callable=util.set_reference_date,
+set_execution_date_invalid_execute_task_id = BranchPythonOperator(
+    task_id='set_execution_date_invalid_execute_task_id',
+    python_callable=utils.set_execution_date,
     templates_dict={
-        'data_name': const.DATA_NAME_SAMPLE,
         'execute_task_id': ['not_exist_task_1', 'not_exist_task_2'],
     },
     provide_context=True,
@@ -69,4 +66,4 @@ dummy_task_for_skip = DummyOperator(
 )
 # 呼び出し関数の判定動作確認用ダミーTASK
 
-set_reference_date_sample >> [execute_monthly, execute_monthly_2, dummy_task_for_skip]
+set_execution_date_sample >> [execute_monthly, execute_monthly_2, dummy_task_for_skip]

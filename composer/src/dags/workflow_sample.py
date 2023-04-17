@@ -37,9 +37,9 @@ dag = DAG(DAG_NAME, schedule_interval=None, default_args=default_args, catchup=F
 
 # TASK設定
 # 処理を実行するかどうかを判定
-set_reference_date = BranchPythonOperator(
-    task_id='set_reference_date',
-    python_callable=utils.set_reference_date,
+set_execution_date = BranchPythonOperator(
+    task_id='set_execution_date',
+    python_callable=utils.set_execution_date,
     templates_dict={
         'data_name': consts.DATA_NAME,
         'execute_task_id_1': 'sensor_csv',
@@ -105,9 +105,9 @@ dummy = DummyOperator(
 )
 
 # 処理フロー設定
-set_reference_date >> sensor_csv >> compare_csv >> [load_csv, delete_csv]
+set_execution_date >> sensor_csv >> compare_csv >> [load_csv, delete_csv]
 load_csv >> create_cold >> [extract_cold, backup_csv, trigger_dag, ]
 backup_csv >> delete_csv
 
 # 処理実行判定からダミーへのフロー
-set_reference_date >> dummy
+set_execution_date >> dummy
